@@ -31,7 +31,9 @@
 #define MAPVIZ__MAP_CANVAS_H_
 
 // QT libraries
-#include <QGLWidget>
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
+#include <QSurfaceFormat>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QColor>
@@ -54,7 +56,7 @@
 
 namespace mapviz
 {
-class MapCanvas : public QGLWidget
+class MapCanvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
   Q_OBJECT
 

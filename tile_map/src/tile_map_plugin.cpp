@@ -38,7 +38,7 @@
 #include <tile_map/wmts_source.h>
 
 // QT libraries
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QPalette>
@@ -282,7 +282,7 @@ namespace tile_map
     return config_widget_;
   }
 
-  bool TileMapPlugin::Initialize(QGLWidget* canvas)
+  bool TileMapPlugin::Initialize(QOpenGLWidget* canvas)
   {
     canvas_ = canvas;
 

@@ -36,7 +36,7 @@
 #include <iostream>
 
 // QT libraries
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QFile>
 
 #include <swri_math_util/math_util.h>
@@ -102,7 +102,7 @@ namespace multires_image
 
             m_memorySize = m_dimension * m_dimension * 4;
 
-            m_image = QGLWidget::convertToGLFormat(m_image);
+            m_image = m_image.convertToFormat(QImage::Format_RGBA8888).mirrored();
           }
         }
         else
