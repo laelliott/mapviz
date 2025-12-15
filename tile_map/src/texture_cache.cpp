@@ -27,17 +27,18 @@
 //
 // *****************************************************************************
 
+#include <GL/glew.h>
+
 #include <tile_map/texture_cache.h>
 
 #include <cmath>
 
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
 #include <rclcpp/logging.hpp>
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QImage>
 
 #include <swri_math_util/math_util.h>
@@ -137,7 +138,7 @@ namespace tile_map
             0,
             GL_RGBA,
             GL_UNSIGNED_BYTE,
-            QGLWidget::convertToGLFormat(qimage).bits());
+            qimage.convertToFormat(QImage::Format_RGBA8888).mirrored().bits());
 
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

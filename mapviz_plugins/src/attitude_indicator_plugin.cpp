@@ -34,7 +34,7 @@
 // QT libraries
 #include <QDebug>
 #include <QDialog>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 // ROS libraries
 #include <rclcpp/rclcpp.hpp>
@@ -192,7 +192,7 @@ namespace mapviz_plugins
     return config_widget_;
   }
 
-  bool AttitudeIndicatorPlugin::Initialize(QGLWidget* canvas)
+  bool AttitudeIndicatorPlugin::Initialize(QOpenGLWidget* canvas)
   {
     initialized_ = true;
     canvas_ = canvas;

@@ -28,12 +28,13 @@
 // *****************************************************************************
 
 #include <GL/glew.h>
-#include <mapviz_plugins/pointcloud2_plugin.h>
-#include <mapviz_plugins/topic_select.h>
 
 // QT libraries
 #include <QDialog>
-#include <QGLWidget>
+#include <QOpenGLWidget>
+
+#include <mapviz_plugins/pointcloud2_plugin.h>
+#include <mapviz_plugins/topic_select.h>
 
 // ROS libraries
 #include <rclcpp/rclcpp.hpp>
@@ -622,7 +623,7 @@ namespace mapviz_plugins
     return config_widget_;
   }
 
-  bool PointCloud2Plugin::Initialize(QGLWidget* canvas)
+  bool PointCloud2Plugin::Initialize(QOpenGLWidget* canvas)
   {
     canvas_ = canvas;
 

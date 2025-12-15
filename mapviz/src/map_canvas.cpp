@@ -29,10 +29,11 @@
 
 
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 
 #include <mapviz/map_canvas.h>
+
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include <geometry_msgs/msg/point.h>
 #include <swri_math_util/constants.h>
@@ -83,7 +84,7 @@ auto tf2_to_msg(const tf2::Stamped<tf2::Transform>& transform)
 }
 
 MapCanvas::MapCanvas(QWidget* parent) :
-  QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
+  QOpenGLWidget(parent),
   has_pixel_buffers_(false),
   pixel_buffer_size_(0),
   pixel_buffer_ids_(),
@@ -120,6 +121,12 @@ MapCanvas::MapCanvas(QWidget* parent) :
   RCLCPP_INFO(rclcpp::get_logger("mapviz"), "View scale: %f meters/pixel", view_scale_);
   setMouseTracking(true);
 
+  // Set up surface format with multisampling and VSync
+  QSurfaceFormat format;
+  format.setSamples(4);  // 4x MSAA
+  format.setSwapInterval(1);  // VSync
+  format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+  setFormat(format);
 
   QObject::connect(&frame_rate_timer_, SIGNAL(timeout()), this, SLOT(update()));
   setFrameRate(50.0);
@@ -456,9 +463,10 @@ void MapCanvas::ToggleRotate90(bool on)
 void MapCanvas::ToggleEnableAntialiasing(bool on)
 {
   enable_antialiasing_ = on;
-  QGLFormat format;
+  QSurfaceFormat format;
   format.setSwapInterval(1);
-  format.setSampleBuffers(enable_antialiasing_);
+  format.setSamples(enable_antialiasing_ ? 4 : 0);
+  format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
   // After setting the format, initializeGL will automatically be called again, then paintGL.
   this->setFormat(format);
 }

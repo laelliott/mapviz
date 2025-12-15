@@ -29,12 +29,12 @@
 
 #include <GL/glew.h>
 
+// QT libraries
+#include <QOpenGLWidget>
+#include <QPalette>
+
 #include <mapviz_plugins/occupancy_grid_plugin.h>
 #include <mapviz_plugins/topic_select.h>
-
-// QT libraries
-#include <QGLWidget>
-#include <QPalette>
 
 // Declare plugin
 #include <pluginlib/class_list_macros.hpp>
@@ -338,7 +338,7 @@ namespace mapviz_plugins
     return config_widget_;
   }
 
-  bool OccupancyGridPlugin::Initialize(QGLWidget* canvas)
+  bool OccupancyGridPlugin::Initialize(QOpenGLWidget* canvas)
   {
     canvas_ = canvas;
     DrawIcon();
