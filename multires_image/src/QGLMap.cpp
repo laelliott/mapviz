@@ -72,7 +72,7 @@ void QGLMap::UpdateView()
       m_tileView->SetView(m_view_center.x(), m_view_center.y(), 1, m_scale);
     }
 
-    glViewport(0, 0, width(), height());
+    glViewport(0, 0, width() * devicePixelRatio(), height() * devicePixelRatio());
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(m_view_top_left.x(), m_view_bottom_right.x(),
