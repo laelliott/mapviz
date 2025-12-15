@@ -27,11 +27,12 @@
 //
 // *****************************************************************************
 
+#include <GL/glew.h>
+
 #include <tile_map/tile_map_view.h>
 
 #include <cmath>
 
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 

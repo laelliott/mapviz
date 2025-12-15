@@ -28,12 +28,13 @@
 // *****************************************************************************
 
 #include <GL/glew.h>
-#include <mapviz_plugins/pointcloud2_plugin.h>
-#include <mapviz_plugins/topic_select.h>
 
 // QT libraries
 #include <QDialog>
 #include <QOpenGLWidget>
+
+#include <mapviz_plugins/pointcloud2_plugin.h>
+#include <mapviz_plugins/topic_select.h>
 
 // ROS libraries
 #include <rclcpp/rclcpp.hpp>

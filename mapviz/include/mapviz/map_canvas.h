@@ -32,7 +32,6 @@
 
 // QT libraries
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
 #include <QSurfaceFormat>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -56,7 +55,7 @@
 
 namespace mapviz
 {
-class MapCanvas : public QOpenGLWidget, protected QOpenGLFunctions
+class MapCanvas : public QOpenGLWidget
 {
   Q_OBJECT
 

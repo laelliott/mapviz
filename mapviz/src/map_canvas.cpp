@@ -29,10 +29,11 @@
 
 
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 
 #include <mapviz/map_canvas.h>
+
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include <geometry_msgs/msg/point.h>
 #include <swri_math_util/constants.h>
@@ -169,8 +170,6 @@ void MapCanvas::InitializePixelBuffers()
 
 void MapCanvas::initializeGL()
 {
-  initializeOpenGLFunctions();
-
   GLenum err = glewInit();
   if (GLEW_OK != err) {
     RCLCPP_ERROR(rclcpp::get_logger("mapviz"), "Error: %s\n", glewGetErrorString(err));
