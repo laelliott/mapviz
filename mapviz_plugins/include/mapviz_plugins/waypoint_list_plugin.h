@@ -46,6 +46,7 @@
 #include <mapviz/map_canvas.h>
 
 // C++ standard libraries
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -105,6 +106,7 @@ private:
   bool has_message_;
 
   std::vector<TransformedWaypoint> waypoints_;
+  mutable std::mutex waypoints_mutex_;
   uint16_t current_seq_;
   std::string source_frame_;
   rclcpp::Time stamp_;

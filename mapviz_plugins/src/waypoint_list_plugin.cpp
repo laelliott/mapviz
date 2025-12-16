@@ -59,7 +59,9 @@ WaypointListPlugin::WaypointListPlugin()
     has_message_(false),
     topic_(""),
     qos_(rmw_qos_profile_default),
-    current_seq_(0)
+    current_seq_(0),
+    source_frame_(""),
+    stamp_(rclcpp::Time(0, 0, RCL_ROS_TIME))
 {
   ui_.setupUi(config_widget_);
   ui_.waypoint_color->setColor(Qt::green);
@@ -105,7 +107,10 @@ void WaypointListPlugin::connectCallback(const std::string& topic, const rmw_qos
   if ((topic != topic_) || !qosEqual(qos, qos_))
   {
     initialized_ = false;
-    waypoints_.clear();
+    {
+      std::lock_guard<std::mutex> lock(waypoints_mutex_);
+      waypoints_.clear();
+    }
     has_message_ = false;
     PrintWarning("No messages received.");
 
@@ -133,12 +138,8 @@ void WaypointListPlugin::waypointListCallback(const mavros_msgs::msg::WaypointLi
     has_message_ = true;
   }
 
-  waypoints_.clear();
-  current_seq_ = msg->current_seq;
-
-  // Use WGS84 frame for global waypoints
-  source_frame_ = "wgs84";
-  stamp_ = node_->now();
+  std::vector<TransformedWaypoint> new_waypoints;
+  uint16_t new_current_seq = msg->current_seq;
 
   for (size_t i = 0; i < msg->waypoints.size(); i++)
   {
@@ -155,17 +156,34 @@ void WaypointListPlugin::waypointListCallback(const mavros_msgs::msg::WaypointLi
       // x_lat is latitude, y_long is longitude for global frames
       twp.point = tf2::Vector3(wp.x_lat, wp.y_long, wp.z_alt);
       twp.transformed = false;
-      twp.is_current = wp.is_current || (i == current_seq_);
+      twp.is_current = wp.is_current || (i == new_current_seq);
       twp.command = wp.command;
       twp.seq = static_cast<uint16_t>(i);
-      waypoints_.push_back(twp);
+      new_waypoints.push_back(twp);
     }
+  }
+
+  // Swap in the new data under lock
+  {
+    std::lock_guard<std::mutex> lock(waypoints_mutex_);
+    waypoints_ = std::move(new_waypoints);
+    current_seq_ = new_current_seq;
+    // Use WGS84 frame for global waypoints
+    source_frame_ = "wgs84";
+    stamp_ = node_->now();
   }
 }
 
 void WaypointListPlugin::Transform()
 {
-  if (waypoints_.empty())
+  if (!initialized_)
+  {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(waypoints_mutex_);
+
+  if (waypoints_.empty() || source_frame_.empty())
   {
     return;
   }
@@ -244,6 +262,13 @@ void WaypointListPlugin::DrawIcon()
 
 void WaypointListPlugin::Draw(double x, double y, double scale)
 {
+  if (!initialized_)
+  {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(waypoints_mutex_);
+
   if (waypoints_.empty())
   {
     PrintWarning("No waypoints to display.");
@@ -296,7 +321,7 @@ void WaypointListPlugin::DrawWaypointConnections()
 {
   const QColor color = ui_.waypoint_color->color();
   glColor4d(color.redF(), color.greenF(), color.blueF(), 0.5);
-  glLineWidth(2);
+  glLineWidth(ui_.line_thickness->value());
 
   glBegin(GL_LINE_STRIP);
   for (const auto& wp : waypoints_)
@@ -332,7 +357,7 @@ void WaypointListPlugin::DrawWaypoint(const TransformedWaypoint& wp, double scal
 
   // Draw circle outline
   glColor4d(color.redF(), color.greenF(), color.blueF(), 1.0);
-  glLineWidth(2);
+  glLineWidth(ui_.line_thickness->value());
   glBegin(GL_LINE_LOOP);
   for (int i = 0; i < segments; i++)
   {
@@ -354,7 +379,7 @@ void WaypointListPlugin::DrawCurrentWaypointHighlight(const TransformedWaypoint&
   // Draw pulsing outer ring
   const int segments = 24;
   glColor4d(color.redF(), color.greenF(), color.blueF(), 1.0);
-  glLineWidth(4);
+  glLineWidth(ui_.line_thickness->value() * 2);
   glBegin(GL_LINE_LOOP);
   for (int i = 0; i < segments; i++)
   {
@@ -411,6 +436,12 @@ void WaypointListPlugin::LoadConfig(const YAML::Node& node, const std::string& p
     bool show = node["show_connections"].as<bool>();
     ui_.show_connections->setChecked(show);
   }
+
+  if (node["line_thickness"])
+  {
+    int thickness = node["line_thickness"].as<int>();
+    ui_.line_thickness->setValue(thickness);
+  }
 }
 
 void WaypointListPlugin::SaveConfig(YAML::Emitter& emitter, const std::string& path)
@@ -426,6 +457,7 @@ void WaypointListPlugin::SaveConfig(YAML::Emitter& emitter, const std::string& p
 
   emitter << YAML::Key << "waypoint_size" << YAML::Value << ui_.waypoint_size->value();
   emitter << YAML::Key << "show_connections" << YAML::Value << ui_.show_connections->isChecked();
+  emitter << YAML::Key << "line_thickness" << YAML::Value << ui_.line_thickness->value();
 
   SaveQosConfig(emitter, qos_);
 }
