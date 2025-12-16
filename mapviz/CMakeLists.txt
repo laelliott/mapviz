@@ -134,6 +134,7 @@ target_link_libraries(rqt_${PROJECT_NAME} PRIVATE
   opencv_imgproc
   opencv_videoio
   OpenGL::GL
+  OpenGL::GLU
   ${swri_math_util_TARGETS}
 )
 

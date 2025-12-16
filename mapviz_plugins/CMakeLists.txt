@@ -176,7 +176,7 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ament_index_cpp::ament_index_cpp
     cv_bridge::cv_bridge
-    ${GLUT_LIBRARY}
+    ${GLUT_LIBRARIES}
     ${gps_msgs_TARGETS}
     image_transport::image_transport
     ${map_msgs_TARGETS}

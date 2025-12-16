@@ -81,7 +81,7 @@ target_include_directories(${PROJECT_NAME}
     ${YamlCpp_INCLUDE_DIRS})
     
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  ${GLU_LIBRARY}
+  OpenGL::GLU
   GLEW::GLEW
   ${JSONCPP_LIBRARIES}
   ${mapviz_TARGETS}
