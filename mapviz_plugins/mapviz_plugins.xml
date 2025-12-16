@@ -80,5 +80,8 @@
   <class name="mapviz_plugins/occupancy_grid" type="mapviz_plugins::OccupancyGridPlugin" base_class_type="mapviz::MapvizPlugin">
     <description>Display maps and other OccupancyGrids</description>
   </class>
+  <class name="mapviz_plugins/waypoint_list" type="mapviz_plugins::WaypointListPlugin" base_class_type="mapviz::MapvizPlugin">
+    <description>Visualizes mavros_msgs/WaypointList with current waypoint highlighting.</description>
+  </class>
 </library>
 

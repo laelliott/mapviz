@@ -47,6 +47,7 @@ find_package(swri_transform_util REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(visualization_msgs REQUIRED)
+find_package(mavros_msgs REQUIRED)
 
 ### QT ###
 find_package(Qt5Core REQUIRED)
@@ -88,7 +89,8 @@ set(UI_FILES
   ui/string_config.ui
   ui/textured_marker_config.ui
   ui/tf_frame_config.ui
-  ui/topicselect.ui)
+  ui/topicselect.ui
+  ui/waypoint_list_config.ui)
 
 set(SRC_FILES
   src/attitude_indicator_plugin.cpp
@@ -118,7 +120,8 @@ set(SRC_FILES
   src/string_plugin.cpp
   src/textured_marker_plugin.cpp
   src/tf_frame_plugin.cpp
-  src/topic_select.cpp)
+  src/topic_select.cpp
+  src/waypoint_list_plugin.cpp)
 
 set(HEADER_FILES
   include/${PROJECT_NAME}/attitude_indicator_plugin.h
@@ -148,7 +151,8 @@ set(HEADER_FILES
   include/${PROJECT_NAME}/string_plugin.h
   include/${PROJECT_NAME}/textured_marker_plugin.h
   include/${PROJECT_NAME}/tf_frame_plugin.h
-  include/${PROJECT_NAME}/topic_select.h)
+  include/${PROJECT_NAME}/topic_select.h
+  include/${PROJECT_NAME}/waypoint_list_plugin.h)
 
 qt5_wrap_ui(UI_SRC_FILES ${UI_FILES})
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES})
@@ -205,7 +209,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     ${swri_route_util_TARGETS}
     tf2::tf2
     tf2_ros::tf2_ros
-    ${visualization_msgs_TARGETS})
+    ${visualization_msgs_TARGETS}
+    ${mavros_msgs_TARGETS})
 target_include_directories(${PROJECT_NAME} INTERFACE
   ${swri_roscpp_TARGETS}
 )
@@ -237,6 +242,7 @@ ament_export_dependencies(
   marti_common_msgs
   marti_sensor_msgs
   marti_visualization_msgs
+  mavros_msgs
   nav_msgs
   OpenCV
   Qt5Core
