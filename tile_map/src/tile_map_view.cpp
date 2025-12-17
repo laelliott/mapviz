@@ -124,6 +124,11 @@ namespace tile_map
     int32_t width,
     int32_t height)
   {
+    if (!tile_source_)
+    {
+      return;
+    }
+
     latitude = std::max(-90.0, std::min(90.0, latitude));
     longitude = std::max(-180.0, std::min(180.0, longitude));
 

@@ -44,6 +44,7 @@
 #include <QSemaphore>
 #include <QSet>
 #include <QThread>
+#include <QWaitCondition>
 #include <set>
 
 namespace tile_map
@@ -158,6 +159,8 @@ namespace tile_map
     private:
       ImageCache* image_cache_;
       QMutex waiting_mutex_;
+      QWaitCondition waiting_condition_;
+      bool notified_;
 
       static const int MAXIMUM_SEQUENTIAL_REQUESTS;
   };

@@ -170,7 +170,9 @@ void WaypointListPlugin::waypointListCallback(const mavros_msgs::msg::WaypointLi
     current_seq_ = new_current_seq;
     // Use WGS84 frame for global waypoints
     source_frame_ = "wgs84";
-    stamp_ = node_->now();
+    if (node_) {
+      stamp_ = node_->now();
+    }
   }
 }
 

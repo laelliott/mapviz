@@ -184,7 +184,7 @@ public:
     swri_transform_util::Transform& transform,
     bool use_latest_transforms = true)
   {
-    if (!initialized_) {
+    if (!initialized_ || !node_ || !tf_manager_) {
       return false;
     }
 

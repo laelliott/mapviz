@@ -32,6 +32,7 @@
 #include <QtAlgorithms>
 #include <QByteArray>
 #include <QList>
+#include <QMutexLocker>
 #include <QNetworkAccessManager>
 #include <QNetworkDiskCache>
 #include <QUrl>
@@ -253,14 +254,17 @@ namespace tile_map
 
   CacheThread::CacheThread(ImageCache* parent) :
     image_cache_(parent),
-    waiting_mutex_()
+    waiting_mutex_(),
+    waiting_condition_(),
+    notified_(false)
   {
-    waiting_mutex_.lock();
   }
 
   void CacheThread::notify()
   {
-    waiting_mutex_.unlock();
+    QMutexLocker locker(&waiting_mutex_);
+    notified_ = true;
+    waiting_condition_.wakeOne();
   }
 
   void CacheThread::run()
@@ -268,14 +272,23 @@ namespace tile_map
     while (!image_cache_->exit_)
     {
       // Wait until we're told there are images we need to request.
-      waiting_mutex_.lock();
+      {
+        QMutexLocker locker(&waiting_mutex_);
+        while (!notified_ && !image_cache_->exit_) {
+          waiting_condition_.wait(&waiting_mutex_);
+        }
+        notified_ = false;
+      }
 
       // Next, get all of them and sort them by priority.
-      image_cache_->unprocessed_mutex_.lock();
-      QList<ImagePtr> images = image_cache_->unprocessed_.values();
-      image_cache_->unprocessed_mutex_.unlock();
-
-      std::sort(images.begin(), images.end(), ComparePriority);
+      // Keep the mutex locked during copy AND sort to prevent race conditions
+      // with shared_ptr reference counting when other threads modify unprocessed_
+      QList<ImagePtr> images;
+      {
+        QMutexLocker locker(&image_cache_->unprocessed_mutex_);
+        images = image_cache_->unprocessed_.values();
+        std::sort(images.begin(), images.end(), ComparePriority);
+      }
 
       // Go through all of them and request them.  Qt's network manager will
       // only handle six simultaneous requests at once, so we use a semaphore
@@ -328,7 +341,9 @@ namespace tile_map
       }
       if (!images.empty())
       {
-        waiting_mutex_.unlock();
+        // More images to process, notify ourselves to continue
+        QMutexLocker locker(&waiting_mutex_);
+        notified_ = true;
       }
     }
   }

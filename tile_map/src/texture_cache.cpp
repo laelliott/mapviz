@@ -93,7 +93,7 @@ namespace tile_map
       {
         failed = image->Failed();
         std::shared_ptr<QImage> image_ptr = image->GetImage();
-        if (image_ptr)
+        if (image_ptr && !image_ptr->isNull() && image_ptr->width() > 0 && image_ptr->height() > 0)
         {
           // All of the OpenGL calls need to occur on the main thread and so
           // can't be done in the background.  The QImage calls could
@@ -129,6 +129,9 @@ namespace tile_map
           }
 
           glBindTexture(GL_TEXTURE_2D, texture->id);
+          // Convert and mirror the image BEFORE passing to OpenGL
+          // to avoid dangling pointer from temporary objects
+          QImage gl_image = qimage.convertToFormat(QImage::Format_RGBA8888).mirrored();
           glTexImage2D(
             GL_TEXTURE_2D,
             0,
@@ -138,7 +141,7 @@ namespace tile_map
             0,
             GL_RGBA,
             GL_UNSIGNED_BYTE,
-            qimage.convertToFormat(QImage::Format_RGBA8888).mirrored().bits());
+            gl_image.bits());
 
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
           glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
