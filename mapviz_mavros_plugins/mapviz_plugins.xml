@@ -1,0 +1,7 @@
+<library path="mapviz_mavros_plugins">
+  <class name="mapviz_plugins/waypoint_list"
+         type="mapviz_mavros_plugins::WaypointListPlugin"
+         base_class_type="mapviz::MapvizPlugin">
+    <description>Visualizes mavros_msgs/WaypointList with current waypoint highlighting.</description>
+  </class>
+</library>
