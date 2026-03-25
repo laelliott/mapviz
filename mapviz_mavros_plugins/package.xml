@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mapviz_mavros_plugins</name>
+  <version>1.0.0</version>
+  <description>
+    Mapviz plugins for MAVROS message types.
+    Provides visualization plugins for mavros_msgs including WaypointList.
+  </description>
+  <author>Logan Elliott</author>
+  <maintainer email="logan@skyways.com">Logan Elliott</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>qt5-qmake</buildtool_depend>
+
+  <depend>libqt5-core</depend>
+  <build_depend>libqt5-opengl-dev</build_depend>
+
+  <depend>mapviz</depend>
+  <depend>mapviz_plugins</depend>
+  <depend>mavros_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>swri_transform_util</depend>
+  <depend>tf2</depend>
+
+  <exec_depend>libqt5-opengl</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <mapviz plugin="${prefix}/mapviz_plugins.xml" />
+  </export>
+
+</package>
